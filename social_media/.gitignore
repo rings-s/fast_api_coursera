@@ -1,0 +1,7 @@
+# Ignore venv
+.venv
+.db
+.env
+.__pycache__
+.vscode
+.*png
