@@ -55,3 +55,17 @@ The `async` keyword in front of a function means that this function can run more
 Then those functions can run in parallel more or less. **This is where we get a speed benefit when we're using FastAPI and async functions.**
 
 ---
+
+
+
+### linting and Formatting
+
+## Ruff
+
+- Ruff is a Python linter and formatter that enforces a consistent code style and helps catch common errors. It is a fast and opinionated linter that is easy to use and can be integrated into your development workflow.    
+
+
+
+
+
+### adding posts to our API
