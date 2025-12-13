@@ -35,15 +35,17 @@ async def get_all_posts():
 
 
 
-@router.post("/comments", response_model=Comment)
-async def create_comment(comment: CommentIn):
-    post = find_post(comment.post_id)
+
+@router.post("/posts/{post_id}/comment/", response_model=Comment)
+async def create_comment(post_id: int, comment: CommentIn):
+    # You might want to add a check here to ensure comment.post_id matches the post_id from the URL
+    post = find_post(post_id) # Use the post_id from the URL
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
     data = comment.dict()
     last_record_id = len(comment_table)
-    new_comment = {**data, "id": last_record_id}
+    new_comment = {**data, "id": last_record_id, "post_id": post_id} # Ensure post_id is set correctly
     comment_table[last_record_id] = new_comment
     return new_comment
 
