@@ -1,6 +1,12 @@
 from fastapi import APIRouter, HTTPException
 
-from models.post import UserPostIn, UserPost, CommentIn, Comment, UserPostWithComments
+from social_media.models.post import (
+    UserPostIn,
+    UserPost,
+    CommentIn,
+    Comment,
+    UserPostWithComments,
+)
 
 router = APIRouter()
 
@@ -20,7 +26,7 @@ def find_post(post_id: int):
     return post_table.get(post_id)
 
 
-@router.post("/posts")
+@router.post("/posts", status_code=201)
 async def create_post(post: UserPostIn):
     data = post.dict()
     last_record_id = len(post_table)
@@ -34,31 +40,35 @@ async def get_all_posts():
     return list(post_table.values())
 
 
-
-
 @router.post("/posts/{post_id}/comment/", response_model=Comment)
 async def create_comment(post_id: int, comment: CommentIn):
     # You might want to add a check here to ensure comment.post_id matches the post_id from the URL
-    post = find_post(post_id) # Use the post_id from the URL
+    post = find_post(post_id)  # Use the post_id from the URL
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
     data = comment.dict()
     last_record_id = len(comment_table)
-    new_comment = {**data, "id": last_record_id, "post_id": post_id} # Ensure post_id is set correctly
+    new_comment = {
+        **data,
+        "id": last_record_id,
+        "post_id": post_id,
+    }  # Ensure post_id is set correctly
     comment_table[last_record_id] = new_comment
     return new_comment
 
 
 @router.get("/posts/{post_id}/comments", response_model=list[Comment])
 async def get_comments_on_the_post(post_id: int):
-    return [comment for comment in comment_table.values()  if comment["post_id"] == post_id]
+    return [
+        comment for comment in comment_table.values() if comment["post_id"] == post_id
+    ]
 
 
 @router.get("/posts/{post_id}", response_model=UserPostWithComments)
 async def get_post_with_comments(post_id: int):
     post = find_post(post_id)
-   
+
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
